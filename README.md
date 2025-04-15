@@ -1,5 +1,7 @@
 # rosrc
 
+This repo is for shell configuration for managing ROS2 worksapces, and short aliases of frequently used `ros2` commands.   
+
 Add the following code to your ~/.bashrc
 ```bash
 # >>> rosrc initialize >>>
