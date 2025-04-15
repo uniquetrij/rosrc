@@ -2,7 +2,7 @@
 
 Add the following code to your ~/.bashrc
 ```bash
-# >>> ros initialize >>>
+# >>> rosrc initialize >>>
 rosactivate() {
     if [ -f ./install/local_setup.bash ]; then
         echo "[ok] ros workspace detected, reconfiguring symlink"
@@ -30,5 +30,5 @@ rosinit() {
         echo "[fail] ros workspace already exists, please run 'rosactivate' to activate it"
     fi
 }
-# <<< ros initialize <<<
+# <<< rosrc initialize <<<
 ```
