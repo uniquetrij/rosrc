@@ -4,7 +4,7 @@ This repo is for shell configuration for managing ROS2 worksapces, and short ali
 
 Add the following code to your ~/.bashrc
 ```bash
-# >>> rosrc initialize >>>
+# >>> ros initialize >>>
 rosactivate() {
     if [ -f ./install/local_setup.bash ]; then
         echo "[ok] ros workspace detected, reconfiguring symlink"
@@ -18,7 +18,10 @@ rosactivate() {
         source ~/.rosrc
         echo "[ok] ros workspace activated"
     else
-        echo "[fail] no ros workspace detected, please run 'rosinit' to initialize a new workspace"
+        if [ ! "$1" == "--quite" ]; then
+            echo "[fail] no ros workspace detected, please run 'rosinit' to initialize a new workspace"
+        fi
+        
     fi
 }
 
@@ -32,5 +35,7 @@ rosinit() {
         echo "[fail] ros workspace already exists, please run 'rosactivate' to activate it"
     fi
 }
-# <<< rosrc initialize <<<
+
+rosactivate --quite
+# <<< ros initialize <<<
 ```
