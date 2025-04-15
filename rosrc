@@ -1,0 +1,61 @@
+# configuration start
+export ROS_WSPACE=~/ros2_ws
+export ROS_DISTRO=jazzy
+# configuration end
+source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+# alias start
+alias rosrc='source ~/.rosrc'
+
+alias rosws='cd $ROS_WSPACE'
+alias rossrc='cd $ROS_WSPACE/src'
+alias rosclean='rosws && rm -rf build/ install/ log/'
+
+alias rossource='source ${ROS_WSPACE}/install/setup.bash'
+rossetup () { rosws && colcon build "$@" --symlink-install && rossource; }
+rosbuild () { rossetup --packages-select "$@"; }
+
+alias rosnd='ros2 node list'
+alias rostop='ros2 topic list'
+alias rosif='ros2 interface list'
+alias rossvc='ros2 service list'
+alias rosact='ros2 action list'
+
+alias rostfv='ros2 run tf2_tools view_frames'
+
+rosdepinst () { rosdep install --from-paths src/"$@" --ignore-src -r -y; }
+rostopecho () { ros2 topic echo "$1"; }
+rosifcheck () { ros2 interface show "$1"; echo 'Prototype:'; ros2 interface proto "$1"; }
+rosnewpack () { rossrc && ros2 pkg create --build-type ament_python "$1"; mkdir "$1"/launch; touch "$1"/launch/"$1".launch.py; touch "$1"/"$1"/"$1".py; cd -; }
+
+rosviz () { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; } 
+# alias end
+
+# Source the ROS setup file for the extracted distribution
+if source /opt/ros/${ROS_DISTRO}/setup.bash 2>/dev/null; then
+  echo "[ok] using ros-$ROS_DISTRO on $ROS_WSPACE"
+else
+  error_message=$(source /opt/ros/${ROS_DISTRO}/setup.bash 2>&1)
+  echo "[fail] error with ros-$ROS_DISTRO: $error_message"
+  return
+fi
+
+# Navigate to workspace directory, createing it if not exists
+mkdir -p $ROS_WSPACE && cd $ROS_WSPACE
+
+# Check if the workspace setup exists
+if [ -f "${ROS_WSPACE}/install/setup.bash" ]; then
+  if source ${ROS_WSPACE}/install/setup.bash 2>/dev/null; then
+    echo "[ok] sourcing ${ROS_WSPACE}/install/setup.bash"
+  else
+    error_message=$(source ${ROS_WSPACE}/install/setup.bash 2>&1)
+    echo "[fail] error with ${ROS_WSPACE}/install/setup.bash: $error_message"
+    return
+  fi
+else
+  # Create the workspace and build it
+  echo "[ok] creating workspace"
+  colcon build --symlink-install
+  rsetup
+fi
+
+
