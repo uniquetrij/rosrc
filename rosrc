@@ -116,6 +116,8 @@ rosrc() {
 }
 
 # >>> ros initialize >>>
+export ROS_DISTRO=jazzy
+
 rosinstall() {
   # Enable Ubuntu Universe repo
   sudo apt install --reinstall -y software-properties-common
@@ -130,7 +132,6 @@ rosinstall() {
   sudo apt update && sudo apt install --reinstall -y ros-dev-tools 
   sudo apt update && sudo apt upgrade -y
   # Install ROS, RViz, Demos, Tutorials 
-  export ROS_DISTRO=jazzy
   sudo apt install --reinstall -y ros-$ROS_DISTRO-desktop  
   # Install Gazebo Simulation for your robots
   sudo apt install --reinstall -y ros-$ROS_DISTRO-ros-gz
@@ -174,7 +175,10 @@ rosinit() {
 }
 
 rosuninstall() {
-  sudo apt remove ~nros-jazzy-* && sudo apt autoremove
+  sudo apt remove ~nros-$ROS_DISTRO-* && sudo apt autoremove
+
+  
+  sudo /opt/miniconda/3/uninstall.sh --remove-caches --remove-config-files user --remove-user-data
   sudo rm /etc/apt/sources.list.d/ros2.list
   sudo apt update
   sudo apt autoremove
