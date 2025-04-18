@@ -121,31 +121,34 @@ export ROS_DISTRO=jazzy
 rosinstall() {
   # Enable Ubuntu Universe repo
   sudo apt install --reinstall -y software-properties-common
-  sudo add-apt-repository -y universe 
+  sudo add-apt-repository -y universe
   # Ensure curl is installed
   sudo apt update && sudo apt install --reinstall -y curl
   # Add ROS 2 GPG key
   sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
   # Add ROS 2 repo
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list >/dev/null
   # Enable development tools
-  sudo apt update && sudo apt install --reinstall -y ros-dev-tools 
+  sudo apt update && sudo apt install --reinstall -y ros-dev-tools
   sudo apt update && sudo apt upgrade -y
-  # Install ROS, RViz, Demos, Tutorials 
-  sudo apt install --reinstall -y ros-$ROS_DISTRO-desktop  
+  # Install ROS, RViz, Demos, Tutorials
+  sudo apt install --reinstall -y ros-$ROS_DISTRO-desktop
   # Install Gazebo Simulation for your robots
   sudo apt install --reinstall -y ros-$ROS_DISTRO-ros-gz
   # Find which python version ROS 2 is using
   export PYTHON_VERSION=$(ls /opt/ros/$ROS_DISTRO/lib/ | grep -oP 'python\K[0-9.]+')
-  # Install Miniconda3 for Python3 virtual environment
-  curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
-  sudo sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda/3
-  /opt/miniconda/3/condabin/conda init && source ~/.bashrc
+  # Check if miniconda installed
+  if [ ! -d /opt/miniconda/3 ]; then
+    # Install Miniconda3 for Python3 virtual environment
+    curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
+    sudo sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda/3
+    /opt/miniconda/3/condabin/conda init && source ~/.bashrc
+  fi
   # Create conda environment for ROS 2
   conda create -y -n $ROS_DISTRO python=$PYTHON_VERSION
   export ENV_PATH=$(/opt/miniconda/3/condabin/conda env list | grep $ROS_DISTRO | awk '{print $NF}')
   # Make ROS 2 python modules available to conda environment
-  echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" > $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth  
+  echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" >$ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth
 }
 
 rosactivate() {
@@ -175,10 +178,8 @@ rosinit() {
 }
 
 rosuninstall() {
-  sudo apt remove ~nros-$ROS_DISTRO-* && sudo apt autoremove
-
-  
   sudo /opt/miniconda/3/uninstall.sh --remove-caches --remove-config-files user --remove-user-data
+  sudo apt remove ~nros-$ROS_DISTRO-* && sudo apt autoremove
   sudo rm /etc/apt/sources.list.d/ros2.list
   sudo apt update
   sudo apt autoremove
