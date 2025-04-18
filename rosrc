@@ -134,7 +134,8 @@ rosinstall() {
   if [ ! -d /opt/miniconda/3 ]; then
     # Install Miniconda3 for Python3 virtual environment
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
-    sudo sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda/3
+    sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda/3
+    sudo chown -R $USER:$USER ~/.condarc ~/.conda ~/.continuum
     /opt/miniconda/3/condabin/conda init && source ~/.bashrc
   fi
   # Create conda environment for ROS 2
