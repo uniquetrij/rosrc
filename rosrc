@@ -1,61 +1,146 @@
-# configuration start
-export ROS_WSPACE=~/ros2_ws
-export ROS_DISTRO=jazzy
-# configuration end
-source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
-# alias start
-alias rosrc='source ~/.rosrc'
+rosrc() {
+  # configuration start
+  export ROS_WSPACE=~/ros2_ws
+  export ROS_DISTRO=jazzy
+  # configuration end
+  source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+  # alias start
+  alias rosrc='source ~/.rosrc'
 
-alias rosws='cd $ROS_WSPACE'
-alias rossrc='cd $ROS_WSPACE/src'
-alias rosclean='rosws && rm -rf build/ install/ log/'
+  alias rosws='cd $ROS_WSPACE'
+  alias rossrc='cd $ROS_WSPACE/src'
+  alias rosclean='rosws && rm -rf build/ install/ log/'
 
-alias rossource='source ${ROS_WSPACE}/install/setup.bash'
-rossetup () { rosws && colcon build "$@" --symlink-install && rossource; }
-rosbuild () { rossetup --packages-select "$@"; }
+  alias rossource='source ${ROS_WSPACE}/install/setup.bash'
+  rossetup() {
+    rosws
+    colcon build "$@" --symlink-install
+    rossource
+  }
+  rosbuild() { rossetup --packages-select "$@" --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"; }
 
-alias rosnd='ros2 node list'
-alias rostop='ros2 topic list'
-alias rosif='ros2 interface list'
-alias rossvc='ros2 service list'
-alias rosact='ros2 action list'
+  alias roswsls='colcon list'
+  alias rospkgs='ros2 pkg list'
+  alias rosnds='ros2 node list'
+  alias rostops='ros2 topic list'
+  alias rosifs='ros2 interface list'
+  alias rossrvs='ros2 service list'
+  alias rosacts='ros2 action list'
 
-alias rostfv='ros2 run tf2_tools view_frames'
+  alias rostfv='ros2 run tf2_tools view_frames'
 
-rosdepinst () { rosdep install --from-paths src/"$@" --ignore-src -r -y; }
-rostopecho () { ros2 topic echo "$1"; }
-rosifcheck () { ros2 interface show "$1"; echo 'Prototype:'; ros2 interface proto "$1"; }
-rosnewpack () { rossrc && ros2 pkg create --build-type ament_python "$1"; mkdir "$1"/launch; touch "$1"/launch/"$1".launch.py; touch "$1"/"$1"/"$1".py; cd -; }
+  rosviz() { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; }
 
-rosviz () { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; } 
-# alias end
+  rosdepinst() { rosdep install --from-paths src/"$@" --ignore-src -r -y; }
+  rostopecho() { ros2 topic echo "$1"; }
+  rosiff() {
+    echo '############## Description ##############'
+    ros2 interface show "$1"
+    echo '############### Prototype ###############'
+    ros2 interface proto "$1"
+    echo '#########################################'
+  }
 
-# Source the ROS setup file for the extracted distribution
-if source /opt/ros/${ROS_DISTRO}/setup.bash 2>/dev/null; then
-  echo "[ok] using ros-$ROS_DISTRO on $ROS_WSPACE"
-else
-  error_message=$(source /opt/ros/${ROS_DISTRO}/setup.bash 2>&1)
-  echo "[fail] error with ros-$ROS_DISTRO: $error_message"
-  return
-fi
+  roscreate() {
+    # Extract the build type and package name
+    local build_type="$1"
+    local package_name="$2"
+    shift 3
 
-# Navigate to workspace directory, createing it if not exists
-mkdir -p $ROS_WSPACE && cd $ROS_WSPACE
+    # Navigate to the source directory and create the package
+    rossrc && ros2 pkg create --license Apache-2.0 --build-type "$build_type" "$package_name"
+    touch "$package_name"/"$package_name"/"$package_name".py
 
-# Check if the workspace setup exists
-if [ -f "${ROS_WSPACE}/install/setup.bash" ]; then
-  if source ${ROS_WSPACE}/install/setup.bash 2>/dev/null; then
-    echo "[ok] sourcing ${ROS_WSPACE}/install/setup.bash"
+    # Parse the combined arguments (remaining flags)
+    for arg in "$@"; do
+      case "$arg" in
+      *u*) # Create urdf directory and file
+        mkdir -p "$package_name"/urdf
+        touch "$package_name"/urdf/"$package_name".urdf
+        ;&
+      *l*) # Create launch directory and file
+        mkdir -p "$package_name"/launch
+        touch "$package_name"/launch/"$package_name".launch.py
+        ;&
+      *m*) # Create msg directory and file
+        mkdir -p "$package_name"/msg
+        touch "$package_name"/msg/"$package_name".msg
+        ;&
+      *s*) # Create srv directory and file
+        mkdir -p "$package_name"/srv
+        touch "$package_name"/srv/"$package_name".srv
+        ;&
+      *a*) # Create action directory and file
+        mkdir -p "$package_name"/action
+        touch "$package_name"/action/"$package_name".action
+        ;;
+      esac
+    done
+
+    cd -
+  }
+  rosnewpy() { roscreate ament_python "$1" "$@"; }
+  rosnewcm() { roscreate ament_cmake "$1" "$@"; }
+
+  # alias end
+
+  # Source the ROS setup file for the extracted distribution
+  if source /opt/ros/${ROS_DISTRO}/setup.bash 2>/dev/null; then
+    echo "🗹 using ros-$ROS_DISTRO on $ROS_WSPACE"
   else
-    error_message=$(source ${ROS_WSPACE}/install/setup.bash 2>&1)
-    echo "[fail] error with ${ROS_WSPACE}/install/setup.bash: $error_message"
+    error_message=$(source /opt/ros/${ROS_DISTRO}/setup.bash 2>&1)
+    echo "🗷 error with ros-$ROS_DISTRO: $error_message"
     return
   fi
-else
-  # Create the workspace and build it
-  echo "[ok] creating workspace"
-  colcon build --symlink-install
-  rsetup
-fi
 
+  # Navigate to workspace directory, createing it if not exists
+  mkdir -p $ROS_WSPACE && cd $ROS_WSPACE
 
+  # Check if the workspace setup exists
+  if [ -f "${ROS_WSPACE}/install/setup.bash" ]; then
+    if source ${ROS_WSPACE}/install/setup.bash 2>/dev/null; then
+      echo "🗹 sourcing ${ROS_WSPACE}/install/setup.bash"
+    else
+      error_message=$(source ${ROS_WSPACE}/install/setup.bash 2>&1)
+      echo "🗷 error with ${ROS_WSPACE}/install/setup.bash: $error_message"
+      return
+    fi
+  else
+    # Create the workspace and build it
+    echo "🗹 creating workspace"
+    colcon build --symlink-install
+    rsetup
+  fi
+  export PYTHONPATH=$PYTHONPATH:$ROS_WSPACE/install
+
+}
+
+# >>> ros initialize >>>
+rosactivate() {
+  if [ -f ./install/local_setup.bash ]; then
+    echo "🗹 ros workspace detected, activating symlink"
+    rm -f ~/ros2_ws && ln -s $(pwd -P) ~/ros2_ws
+    echo "🗹"$(ls -l --color=always ~/ros2_ws | awk '/->/ {print $9, $10, $11}')
+    echo "🗹 symlink created, activating rosrc"
+    rosrc
+    echo "🗹 ros workspace activated"
+  else
+    if [ ! "$1" == "--quite" ]; then
+      echo "🗷 no ros workspace detected, please run 'rosinit' to initialize a new workspace"
+    fi
+  fi
+}
+
+rosinit() {
+  if [ ! -f ./install/local_setup.bash ]; then
+    colcon build >>/dev/null 2>&1
+    mkdir src
+    echo "🗹 ros workspace created"
+    rosactivate
+  else
+    echo "🗷 ros workspace already exists, please run 'rosactivate' to activate it"
+  fi
+}
+
+rosactivate --quite
+# <<< ros initialize <<<
