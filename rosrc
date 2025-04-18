@@ -1,10 +1,18 @@
 export ROS_DISTRO=jazzy
 export ROS_WS=~/ros2_ws
 
+rosws() {
+  # Check if the workspace directory exists
+  if [ ! -d "$ROS_WS" ]; then
+    echo "🗷 error: $ROS_WS does not exist"
+    return
+  fi
+  cd $ROS_WS
+}
+
 ::__rosrc() {
   alias rosrc='source ~/.rosrc'
 
-  rosws() { cd $ROS_WS; }
   rossrc() { cd $ROS_WS/src; }
   rosclean() {
     rosws
