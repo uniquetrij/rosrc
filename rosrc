@@ -126,8 +126,6 @@ rosinstall() {
   # Enable Ubuntu Universe repo
   sudo apt install --reinstall -y software-properties-common
   sudo add-apt-repository -y universe
-  # Ensure curl is installed
-  sudo apt update && sudo apt install --reinstall -y curl
   # Add ROS 2 GPG key
   sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
   # Add ROS 2 repo
