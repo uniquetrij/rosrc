@@ -1,6 +1,8 @@
 export ROS_DISTRO=jazzy
 export ROS_WS=~/ros2_ws
 export ROS_LOCAL_SETUP=${ROS_WS}/install/setup.bash
+export CONDA_HOME=/opt/miniconda3
+export CONDA_EXEC=$CONDA_HOME/condabin/conda
 
 rosws() {
   # Check if the workspace directory exists
@@ -140,16 +142,16 @@ rosinstall() {
   # Find which python version ROS 2 is using
   export PYTHON_VERSION=$(ls /opt/ros/$ROS_DISTRO/lib/ | grep -oP 'python\K[0-9.]+')
   # Check if miniconda installed
-  if [ ! -d /opt/miniconda3 ]; then
+  if [ ! -d $CONDA_HOME ]; then
     # Install Miniconda3 for Python3 virtual environment
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
-    sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3
+    sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_HOME
     sudo chown -R $USER:$USER ~/.condarc ~/.conda ~/.continuum
-    /opt/miniconda3/condabin/conda init && source ~/.bashrc
+    $CONDA_EXEC init && source ~/.bashrc
   fi
   # Create conda environment for ROS 2
-  conda create -y -n $ROS_DISTRO -p /opt/miniconda3/envs python=$PYTHON_VERSION
-  export ENV_PATH=$(/opt/miniconda3/condabin/conda env list | grep $ROS_DISTRO | awk '{print $NF}')
+  sudo -E $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO python=$PYTHON_VERSION
+  export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
   # Make ROS 2 python modules available to conda environment
   echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" >$ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth
 }
@@ -182,7 +184,7 @@ rosinit() {
 }
 
 rosuninstall() {
-  sudo -E /opt/miniconda3/uninstall.sh --remove-caches --remove-config-files user --remove-user-data
+  sudo -E $CONDA_HOME/uninstall.sh --remove-caches --remove-config-files user --remove-user-data
   sudo apt remove ~nros-$ROS_DISTRO-* && sudo apt autoremove
   sudo rm /etc/apt/sources.list.d/ros2.list
   sed -i '/source ~\/.rosrc/d' ~/.bashrc
