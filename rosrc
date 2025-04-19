@@ -19,7 +19,7 @@ rosws() {
     rosws
     rm -rf build/ install/ log/
   }
-  rossource() { source $ROS_LOCAL_SETUP }
+  rossource() { source $ROS_LOCAL_SETUP; }
   rosbuildall() {
     rosws
     colcon build "$@" --symlink-install
