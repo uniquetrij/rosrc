@@ -146,14 +146,14 @@ rosinstall() {
     # Install Miniconda3 for Python3 virtual environment
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
     sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_HOME
-    sudo chown -R $USER:$USER ~/.condarc ~/.conda ~/.continuum
+    sudo chown -R $USER:$USER ~/.condarc ~/.conda ~/.continuum 2>/dev/null
     $CONDA_EXEC init && source ~/.bashrc
   fi
   # Create conda environment for ROS 2
-  sudo -E $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO python=$PYTHON_VERSION
+  sudo $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO python=$PYTHON_VERSION
   export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
   # Make ROS 2 python modules available to conda environment
-  echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" >$ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth
+  sudo echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" >$ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth
 }
 
 rosactivate() {
