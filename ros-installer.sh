@@ -6,6 +6,6 @@ curl -s https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/main/rosrc
 # Source it into your ~/.bashrc if not already done
 grep -q "source ~/.rosrc" ~/.bashrc || echo "source ~/.rosrc" >> ~/.bashrc
 # Refresh your bash
-source ~/.bashrc
+. ~/.bashrc
 # Execute the installer
 rosinstall
