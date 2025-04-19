@@ -8,4 +8,5 @@ grep -q "source ~/.rosrc" ~/.bashrc || echo "source ~/.rosrc" >> ~/.bashrc
 # Refresh your bash
 source ~/.bashrc
 # Execute the installer
-bash rosinstall
+shopt -s expand_aliases
+rosinstall
