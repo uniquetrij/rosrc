@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Download the latest ~/.rosrc
 if [[ -f ~/.rosrc ]]; then mv ~/.rosrc ~/.rosrc.stale.$(date +%Y%m%d%H%M%S.%s); fi
