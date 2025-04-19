@@ -13,7 +13,7 @@ rosws() {
   cd $ROS_WS
 }
 
-::__rosrc() {
+__rosrc() {
   alias rosrc='source ~/.rosrc'
 
   rossrc() { cd $ROS_WS/src; }
@@ -162,7 +162,7 @@ rosactivate() {
     rm -f ~/ros2_ws && ln -s $(pwd -P) ~/ros2_ws
     echo "🗹 "$(ls -l --color=always ~/ros2_ws | awk '/->/ {print $9, $10, $11}')
     echo "🗹 symlink created, activating rosrc"
-    ::__rosrc
+    __rosrc
     echo "🗹 ros workspace activated"
 
   else
