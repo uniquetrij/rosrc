@@ -8,4 +8,4 @@ grep -q "source ~/.rosrc" ~/.bashrc || echo "source ~/.rosrc" >> ~/.bashrc
 # Refresh your bash
 source ~/.bashrc
 # Execute the installer
-rosinstall
+bash rosinstall
