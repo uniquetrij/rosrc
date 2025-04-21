@@ -3,6 +3,7 @@ export ROS_WS=~/ros2_ws
 export ROS_LOCAL_SETUP=${ROS_WS}/install/setup.bash
 export CONDA_HOME=/opt/miniconda3
 export CONDA_EXEC=$CONDA_HOME/condabin/conda
+export QT_QPA_PLATFORMTHEME=gtk2
 
 rosws() {
   # Check if the workspace directory exists
@@ -194,6 +195,8 @@ rosinstall() {
   sudo apt install --reinstall -y ros-$ROS_DISTRO-ros-gz
   # Install ROS 2 command line tools
   sudo apt install --reinstall -y ros-$ROS_DISTRO-urdf-tutorial
+  # Install plugins for rviz dark theme
+  sudo apt install --reinstall -y qt5-style-plugins
   # Find which python version ROS 2 is using
   export PYTHON_VERSION=$(ls /opt/ros/$ROS_DISTRO/lib/ | grep -oP 'python\K[0-9.]+')
   # Check if miniconda installed
