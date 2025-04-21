@@ -30,32 +30,36 @@ __rosrc() {
 
   rosset() { source $ROS_LOCAL_SETUP; }
 
-  rosbuild() {
+  __rosbuild() {
     rosws
     colcon build "$@" --symlink-install
     rosset
   }
 
-  rosbld() {
-    #if no args then do rosls with serial number ad ask user unput
-    if [ $# -eq 0 ]; then
-      rosls | nl
-      echo "Please enter the package number / names to build, skip to build all:"
-      read __packages
-      # if the package name is empty then build all
-      if [ -z "$__packages" ]; then
-        rosbuild --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"
+  rosbuild() {
+      # If no args then do rosls with serial number and ask user input
+      if [ $# -eq 0 ]; then
+        rosls | nl
+        echo "Select package(s) to build, skip to build all:"
+        read -a __packages
+        # If the package name is empty then build all
+        if [ -z "${__packages[*]}" ]; then
+          __rosbuild --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"
+          return
+        fi
+        # If the package names are numbers, get the package names from the list
+        for i in "${!__packages[@]}"; do
+          if [[ ${__packages[$i]} =~ ^[0-9]+$ ]]; then
+            __packages[$i]=$(rosls | sed -n "${__packages[$i]}p" | awk '{print $1}')
+          fi
+        done
+        __rosbuild --packages-select "${__packages[@]}" --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"
+      else
+        __rosbuild --packages-select "$@" --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"
       fi
-      # if the package name is a number then get the package name from the list
-      if [[ $__packages =~ ^[0-9]+$ ]]; then
-        __packages=$(rosls | sed -n "${__packages}p" | awk '{print $1}')
-      fi
-      rosbuild --packages-select $__packages --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"
-    else
-      rosbuild --packages-select $@ --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"
-    fi
   }
-  roscreate() {
+
+  __rosnew() {
     # Extract the build type and package name
     local build_type="$1"
     local __packages="$2"
@@ -93,8 +97,10 @@ __rosrc() {
 
     cd -
   }
-  rosnewpy() { roscreate ament_python "$1" "$@"; }
-  rosnewcpp() { roscreate ament_cmake "$1" "$@"; }
+
+  rosnewp() { __rosnew ament_python "$1" "$@"; }
+
+  rosnewc() { __rosnew ament_cmake "$1"  "$@"; }
 
   alias rospkgs='ros2 pkg list'
   alias rosnds='ros2 node list'
@@ -103,12 +109,14 @@ __rosrc() {
   alias rossrvs='ros2 service list'
   alias rosacts='ros2 action list'
 
-  alias rosvtf='ros2 run tf2_tools view_frames'
+  rosvtf() { ros2 run tf2_tools view_frames; }
 
   rosvurdf() { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; }
 
-  rosdepinst() { rosdep install --from-paths src/"$@" --ignore-src -r -y; }
+  rosdepi() { rosdep install --from-paths src/"$@" --ignore-src -r -y; }
+
   rostopecho() { ros2 topic echo "$1"; }
+
   rosiff() {
     echo '############## Description ##############'
     ros2 interface show "$1"
