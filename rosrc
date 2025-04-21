@@ -14,52 +14,79 @@ rosws() {
 }
 
 __rosrc() {
-  alias rosrc='source ~/.rosrc'
+
+  rosrc() { source ~/.rosrc; }
+
+  rosls() { colcon list; }
 
   rossrc() { cd $ROS_WS/src; }
+
   rosclean() {
     rosws
     rm -rf build/ install/ log/
+    unset AMENT_PREFIX_PATH
+    unset CMAKE_PREFIX_PATH
   }
-  rossource() { source $ROS_LOCAL_SETUP; }
-  rosbuildall() {
+
+  rosset() { source $ROS_LOCAL_SETUP; }
+
+  rosbuild() {
     rosws
     colcon build "$@" --symlink-install
-    rossource
+    rosset
   }
-  rosbuild() { rosbuildall --packages-select "$@" --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"; }
+
+  rosbld() {
+    #if no args then do rosls with serial number ad ask user unput
+    if [ $# -eq 0 ]; then
+      rosls | nl
+      echo "Please enter the package number / names to build, skip to build all:"
+      read __packages
+      # if the package name is empty then build all
+      if [ -z "$__packages" ]; then
+        rosbuild --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"
+      fi
+      # if the package name is a number then get the package name from the list
+      if [[ $__packages =~ ^[0-9]+$ ]]; then
+        __packages=$(rosls | sed -n "${__packages}p" | awk '{print $1}')
+      fi
+      rosbuild --packages-select $__packages --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"
+    else
+      rosbuild --packages-select $@ --cmake-args -DPython3_FIND_VIRTUALENV="ONLY"
+    fi
+  }
   roscreate() {
     # Extract the build type and package name
     local build_type="$1"
-    local package_name="$2"
+    local __packages="$2"
     shift 3
 
     # Navigate to the source directory and create the package
-    rossrc && ros2 pkg create --license Apache-2.0 --build-type "$build_type" "$package_name"
-    touch "$package_name"/"$package_name"/"$package_name".py
+    rossrc && ros2 pkg create --license Apache-2.0 --build-type "$build_type" "$__packages"
+    touch "$__packages"/"$__packages"/"$__packages".py
 
     # Parse the combined arguments (remaining flags)
     for arg in "$@"; do
       case "$arg" in
       *u*) # Create urdf directory and file
-        mkdir -p "$package_name"/urdf
-        touch "$package_name"/urdf/"$package_name".urdf
+        mkdir -p "$__packages"/urdf
+        touch "$__packages"/urdf/"$__packages".urdf
         ;&
       *l*) # Create launch directory and file
-        mkdir -p "$package_name"/launch
-        touch "$package_name"/launch/"$package_name".launch.py
+        mkdir -p "$__packages"/launch
+        touch "$__packages"/launch/"$__packages".launch.py
         ;&
       *m*) # Create msg directory and file
-        mkdir -p "$package_name"/msg
-        touch "$package_name"/msg/"$package_name".msg
+        mkdir -p "$__packages"/msg
+        touch "$__packages"/msg/"$__packages".msg
         ;&
       *s*) # Create srv directory and file
-        mkdir -p "$package_name"/srv
-        touch "$package_name"/srv/"$package_name".srv
+        mkdir -p "$__packages"/srv
+        touch "$__packages"/srv/"$__packages".srv
         ;&
       *a*) # Create action directory and file
-        mkdir -p "$package_name"/action
-        touch "$package_name"/action/"$package_name".action
+        mkdir -p "$__packages"/action
+        touch "$__packages"/action/"$__packages".action
         ;;
       esac
     done
@@ -69,7 +96,6 @@ __rosrc() {
   rosnewpy() { roscreate ament_python "$1" "$@"; }
   rosnewcpp() { roscreate ament_cmake "$1" "$@"; }
 
-  alias rosls='colcon list'
   alias rospkgs='ros2 pkg list'
   alias rosnds='ros2 node list'
   alias rostops='ros2 topic list'
@@ -105,10 +131,10 @@ __rosrc() {
 
   # Check if the workspace setup exists
   if [ -f "$ROS_LOCAL_SETUP" ]; then
-    if rossource 2>/dev/null; then
+    if rosset 2>/dev/null; then
       echo "🗹 sourcing $ROS_LOCAL_SETUP"
     else
-      error_message=$(rossource 2>&1)
+      error_message=$(rosset 2>&1)
       echo "🗷 error with $ROS_LOCAL_SETUP: $error_message"
       return
     fi
@@ -151,7 +177,7 @@ rosinstall() {
   $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO python=$PYTHON_VERSION
   export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
   # Make ROS 2 python modules available to conda environment
-  echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" | sudo tee $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth > /dev/null
+  echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" | sudo tee $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth >/dev/null
 }
 
 rosactivate() {
@@ -173,7 +199,7 @@ rosactivate() {
 rosinit() {
   if [ ! -f ./install/local_setup.bash ]; then
     colcon build >>/dev/null 2>&1
-    mkdir src
+    mkdir -p src
     echo "🗹 ros workspace created"
     rosactivate
   else
