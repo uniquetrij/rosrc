@@ -77,9 +77,9 @@ __rosrc() {
   alias rossrvs='ros2 service list'
   alias rosacts='ros2 action list'
 
-  alias rostfv='ros2 run tf2_tools view_frames'
+  alias rosvtf='ros2 run tf2_tools view_frames'
 
-  rosviz() { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; }
+  rosvurdf() { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; }
 
   rosdepinst() { rosdep install --from-paths src/"$@" --ignore-src -r -y; }
   rostopecho() { ros2 topic echo "$1"; }
