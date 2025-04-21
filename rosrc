@@ -110,7 +110,12 @@ __rosrc() {
   alias rossrvs='ros2 service list'
   alias rosacts='ros2 action list'
 
-  rosvtf() { ros2 run tf2_tools view_frames; }
+  rosvtf() { 
+    export __=$(ros2 run tf2_tools view_frames 2>&1 | grep -oP 'frames_\d{4}-\d{2}-\d{2}_\d{2}\.\d{2}\.\d{2}')
+    mv $__* /tmp
+    open /tmp/$__.pdf
+    unset __
+  }
 
   rosvurdf() { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; }
 
