@@ -18,15 +18,25 @@ __rosrc() {
 
   rosrc() { source ~/.rosrc; }
 
-  rosls() { colcon list; }
+  rosls() {
+    rosws
+    colcon list
+  }
 
   rossrc() { cd $ROS_WS/src; }
+
+  rospwd() { readlink -f $ROS_WS; }
+
+  roscd() { cd $(rospwd); }
 
   rosclean() {
     rosws
     rm -rf build/ install/ log/
     unset AMENT_PREFIX_PATH
     unset CMAKE_PREFIX_PATH
+    stty -echo
+    rosrc
+    stty echo
   }
 
   rosset() { source $ROS_LOCAL_SETUP; }
@@ -110,7 +120,7 @@ __rosrc() {
   alias rossrvs='ros2 service list'
   alias rosacts='ros2 action list'
 
-  rosvtf() { 
+  rosvtf() {
     export __=$(ros2 run tf2_tools view_frames 2>&1 | grep -oP 'frames_\d{4}-\d{2}-\d{2}_\d{2}\.\d{2}\.\d{2}')
     mv $__* /tmp
     open /tmp/$__.pdf
@@ -119,7 +129,47 @@ __rosrc() {
 
   rosvurdf() { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; }
 
-  rosdepi() { rosdep install --from-paths src/"$@" --ignore-src -r -y; }
+  __rosdepi() {
+    if ! rosdep install --from-paths "$@" --ignore-src -r -y -v; then
+      # prepend src/ to the package names
+      __packages=()
+      for i in "$@"; do
+        if [[ ! $i =~ ^src/ ]]; then
+          __packages+=("src/$i")
+        else
+          __packages+=("$i")
+        fi
+      done
+      __rosdepi "${__packages[@]}"
+    fi
+  }
+
+  rosdepi() {
+    # If no args then do rosls with serial number and ask user input
+    if [ $# -eq 0 ]; then
+      rosls | nl
+      echo "Select package(s) to scan dependencies, skip to scan all:"
+      read -a __packages
+      # If the package name is empty then scan all
+      if [ -z "${__packages[*]}" ]; then
+        __rosdepi src/
+        return
+      fi
+      # If the package names are numbers, get the package names from the list
+      for i in "${!__packages[@]}"; do
+        if [[ ${__packages[$i]} =~ ^[0-9]+$ ]]; then
+          __packages[$i]=$(rosls | sed -n "${__packages[$i]}p" | awk '{print $2}')
+          # if __packages[$i] doesn't start with src/ then prepend src/
+          if [[ ! ${__packages[$i]} =~ ^src/ ]]; then
+            __packages[$i]=src/${__packages[$i]}
+          fi
+        fi
+      done
+      __rosdepi "${__packages[@]}"
+    else
+      __rosdepi "$@"
+    fi
+  }
 
   rostopecho() { ros2 topic echo "$1"; }
 
