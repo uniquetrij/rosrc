@@ -109,9 +109,9 @@ __rosrc() {
     cd -
   }
 
-  rosnewp() { __rosnew ament_python "$1" "$@"; }
+  rosnewpy() { __rosnew ament_python "$1" "$@"; }
 
-  rosnewc() { __rosnew ament_cmake "$1" "$@"; }
+  rosnewcm() { __rosnew ament_cmake "$1" "$@"; }
 
   alias rospkgs='ros2 pkg list'
   alias rosnds='ros2 node list'
