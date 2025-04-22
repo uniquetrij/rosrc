@@ -20,6 +20,6 @@ curl -s https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/main/ros-i
 
 * Customises the bash shell:
 
-    * Installs [rosrc](./rosrc), a collection of useful alias shortcuts for commonly used ROS2 commands, under the user's home directory as `~/.rosrc`.This makes getting started extremely quick.
+    * Installs [rosrc](./rosrc), a collection of useful alias shortcuts for commonly used ROS2 commands, under the user's home directory as `~/.rosrc`. This makes getting started extremely quick.
 
     * Installs [extrc](https://github.com/uniquetrij/bashrc-extensions/extrc), a collection of custom bash utility functions, under the user's home directory as `~/.extrc`, that I commonly use while working with ubuntu-terminal. Eg. `mkcd` that combines `mkdir` and `cd` into a single command.
