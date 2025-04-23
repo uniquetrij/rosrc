@@ -1,4 +1,5 @@
 export ROS_DISTRO=jazzy
+export ROS_WS_HOME=~/Workspace/ros
 export ROS_WS=~/ros2_ws
 export ROS_LOCAL_SETUP=${ROS_WS}/install/setup.bash
 export CONDA_HOME=/opt/miniconda3
@@ -6,12 +7,27 @@ export CONDA_EXEC=$CONDA_HOME/condabin/conda
 export QT_QPA_PLATFORMTHEME=gtk2
 
 rosws() {
+  if [ "$1" == "-t" ]; then
+    find $ROS_WS_HOME -type d -name "install" | sed 's:/install::' | LS_COLORS="di=0;30:fi=1;33" tree --fromfile --noreport
+    return
+  fi
+  if [ ! -d "$ROS_WS" ]; then
+    echo "🗷 error: $ROS_WS does not exist"
+    return
+  fi
+  echo -e "\e[1;33m"$(readlink -f $ROS_WS)
+}
+
+roscd() {
   # Check if the workspace directory exists
   if [ ! -d "$ROS_WS" ]; then
     echo "🗷 error: $ROS_WS does not exist"
     return
   fi
   cd $ROS_WS
+  if [ "$1" == "-t" ]; then
+    cd $(pwd -P)
+  fi
 }
 
 __rosrc() {
@@ -19,18 +35,14 @@ __rosrc() {
   rosrc() { source ~/.rosrc; }
 
   rosls() {
-    rosws
+    roscd
     colcon list
   }
 
   rossrc() { cd $ROS_WS/src; }
 
-  rospwd() { readlink -f $ROS_WS; }
-
-  roscd() { cd $(rospwd); }
-
   rosclean() {
-    rosws
+    roscd
     rm -rf build/ install/ log/
     unset AMENT_PREFIX_PATH
     unset CMAKE_PREFIX_PATH
@@ -42,7 +54,7 @@ __rosrc() {
   rosset() { source $ROS_LOCAL_SETUP; }
 
   __rosbuild() {
-    rosws
+    roscd
     colcon build "$@" --symlink-install
     rosset
   }
