@@ -8,11 +8,11 @@ export QT_QPA_PLATFORMTHEME=gtk2
 
 rosws() {
   if [ "$1" == "-t" ]; then
-    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | LS_COLORS="di=0;36:fi=1;33" tree --fromfile --noreport
+    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | sort | awk -v rosws="$(rosws)" '{if ($0 == rosws) print $0" *"; else print $0}' | LS_COLORS="* *=1;36" tree --fromfile --noreport 
     return
   fi
   if [ "$1" == "-l" ]; then
-    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | awk -v rosws="$(rosws)" '{if ($0 == rosws) print "\033[0;32m* "$0"\033[0m"; else print "  "$0}' | nl
+    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | sort | awk -v rosws="$(rosws)" '{if ($0 == rosws) print "\033[1;36m* "$0"\033[0m"; else print "  "$0}' | nl
     return
   fi
   if [ "$1" == "-c" ]; then
