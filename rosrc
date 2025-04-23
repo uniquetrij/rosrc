@@ -304,8 +304,8 @@ rosinstall() {
 rosactivate() {
   if [ -f ./install/local_setup.bash ]; then
     echo "🗹 ros workspace detected, activating symlink"
-    rm -f ~/ros2_ws && ln -s $(pwd -P) ~/ros2_ws
-    echo "🗹 "$(ls -l --color=always ~/ros2_ws | awk '/->/ {print $9, $10, $11}')
+    rm -f $ROS_WS && ln -s $(pwd -P) $ROS_WS
+    echo "🗹 "$(ls -l --color=always $ROS_WS | awk '/->/ {print $9, $10, $11}')
     echo "🗹 symlink created, activating rosrc"
     __rosrc
     echo "🗹 ros workspace activated"
