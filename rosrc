@@ -19,7 +19,6 @@ rosws() {
 }
 
 roscd() {
-  # Check if the workspace directory exists
   if [ ! -d "$ROS_WS" ]; then
     echo "🗷 error: $ROS_WS does not exist"
     return
