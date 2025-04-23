@@ -8,7 +8,11 @@ export QT_QPA_PLATFORMTHEME=gtk2
 
 rosws() {
   if [ "$1" == "-t" ]; then
-    find $ROS_WS_HOME -type d -name "install" | sed 's:/install::' | LS_COLORS="di=0;30:fi=1;33" tree --fromfile --noreport
+    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | LS_COLORS="di=0;36:fi=1;33" tree --fromfile --noreport
+    return
+  fi
+  if [ "$1" == "-l" ]; then
+    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | nl
     return
   fi
   if [ ! -d "$ROS_WS" ]; then
@@ -248,9 +252,9 @@ rosinstall() {
   # Enable Ubuntu Universe repo
   sudo apt install --reinstall -y software-properties-common
   sudo add-apt-repository -y universe
-  # Add ROS 2 GPG key
+  # Add ROS2 GPG key
   sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-  # Add ROS 2 repo
+  # Add ROS2 repo
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list >/dev/null
   # Enable development tools
   sudo apt update && sudo apt install --reinstall -y ros-dev-tools
@@ -259,11 +263,11 @@ rosinstall() {
   sudo apt install --reinstall -y ros-$ROS_DISTRO-desktop
   # Install Gazebo Simulation for your robots
   sudo apt install --reinstall -y ros-$ROS_DISTRO-ros-gz
-  # Install ROS 2 command line tools
+  # Install ROS2 command line tools
   sudo apt install --reinstall -y ros-$ROS_DISTRO-urdf-tutorial
   # Install plugins for rviz dark theme
   sudo apt install --reinstall -y qt5-style-plugins
-  # Find which python version ROS 2 is using
+  # Find which python version ROS2 is using
   export PYTHON_VERSION=$(ls /opt/ros/$ROS_DISTRO/lib/ | grep -oP 'python\K[0-9.]+')
   # Check if miniconda installed
   if [ ! -d $CONDA_HOME ]; then
@@ -273,11 +277,13 @@ rosinstall() {
     sudo chown -R $USER:$USER ~/.condarc ~/.conda ~/.continuum 2>/dev/null
     $CONDA_EXEC init && source ~/.bashrc
   fi
-  # Create conda environment for ROS 2
+  # Create conda environment for ROS2
   $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO python=$PYTHON_VERSION catkin_pkg
   export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
-  # Make ROS 2 python modules available to conda environment
+  # Make ROS2 python modules available to conda environment
   echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" | sudo tee $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth >/dev/null
+  # Create ROS2 workspace
+  mkdir -p ~/Workspace/ros
 }
 
 rosactivate() {
