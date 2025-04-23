@@ -65,14 +65,14 @@ __rosrc() {
   rosrc() { source ~/.rosrc; }
 
   rosls() {
-    roscd
+    roscd -c
     colcon list
   }
 
   rossrc() { cd $ROS_WS/src; }
 
   rosclean() {
-    roscd
+    roscd -c
     rm -rf build/ install/ log/
     unset AMENT_PREFIX_PATH
     unset CMAKE_PREFIX_PATH
@@ -84,7 +84,7 @@ __rosrc() {
   rosset() { source $ROS_LOCAL_SETUP; }
 
   __rosbuild() {
-    roscd
+    roscd -c
     colcon build "$@" --symlink-install
     rosset
   }
