@@ -15,20 +15,35 @@ rosws() {
     find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | nl
     return
   fi
-  if [ ! -d "$ROS_WS" ]; then
-    echo "🗷 error: $ROS_WS does not exist"
+  if [ "$1" == "-c" ]; then
+    echo $(ls -l --color=always $(pwd) | awk '/->/ {print $9, $10, $11}')
     return
   fi
-  echo -e "\e[1;33m"$(readlink -f $ROS_WS)"\e[0m"
+  if [ ! -f ./install/setup.bash ]; then
+    echo "🗷 error: you are not currently inside a ros workspace"
+    return
+  fi
+  readlink -f $(pwd)
 }
 
 roscd() {
+  if [ ! -z "$1" ]; then
+    if [ -d $1 ]; then
+      if [ ! -f $1/install/setup.bash ]; then
+        echo "🗷 error: '$1' is not a ros workspace"
+        return
+      fi
+      cd $1
+      rosactivate
+      return
+    fi
+  fi
   if [ ! -d "$ROS_WS" ]; then
     echo "🗷 error: $ROS_WS does not exist"
     return
   fi
   cd $ROS_WS
-  if [ "$1" == "-t" ]; then
+  if [ "$1" == "-d" ]; then
     cd $(pwd -P)
   fi
 }
