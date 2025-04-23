@@ -8,7 +8,7 @@ export QT_QPA_PLATFORMTHEME=gtk2
 
 rosws() {
   if [ "$1" == "-t" ]; then
-    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | sort | awk -v rosws="$(rosws)" '{if ($0 == rosws) print $0" *"; else print $0}' | LS_COLORS="* *=1;36" tree --fromfile --noreport 
+    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | sort | awk -v rosws="$(rosws)" '{if ($0 == rosws) print $0" *"; else print $0}' | LS_COLORS="* *=1;36" tree --fromfile --noreport
     return
   fi
   if [ "$1" == "-l" ]; then
@@ -16,14 +16,10 @@ rosws() {
     return
   fi
   if [ "$1" == "-c" ]; then
-    echo $(ls -l --color=always $(pwd) | awk '/->/ {print $9, $10, $11}')
+    echo $(ls -l --color=always $ROS_WS | awk '/->/ {print $9, $10, $11}')
     return
   fi
-  if [ ! -f ./install/setup.bash ]; then
-    echo "🗷 error: you are not currently inside a ros workspace"
-    return
-  fi
-  readlink -f $(pwd)
+  readlink -f $ROS_WS
 }
 
 roscd() {
@@ -36,26 +32,32 @@ roscd() {
       cd $1
       rosactivate
       return
-    elif [ "$1" == "-s" ]; then
-      rosws -l
-      echo "Select workspace to cd into:"
-      read -a __ws
-      if [[ ${__ws} =~ ^[0-9]+$ ]]; then
-        __ws=$(rosws -l | sed -n "${__ws}p" | awk '{print $NF}')
+    elif [ "$1" == "-c" ]; then
+      if [ ! -d "$ROS_WS" ]; then
+        echo "🗷 error: $ROS_WS does not exist"
+        return
       fi
-      echo "$__ws"
-      roscd $__ws
+      cd $ROS_WS
+      if [ "$1" == "-d" ]; then
+        cd $(pwd -P)
+      fi
       return
     fi
   fi
-  if [ ! -d "$ROS_WS" ]; then
-    echo "🗷 error: $ROS_WS does not exist"
+  rosws -l
+  echo "Select workspace to cd into, skip for current:"
+  read -a __ws
+  if [ -z "${__ws}" ]; then
+    roscd $ROS_WS
     return
   fi
-  cd $ROS_WS
-  if [ "$1" == "-d" ]; then
-    cd $(pwd -P)
+  if [[ ${__ws} =~ ^[0-9]+$ ]]; then
+    __ws=$(rosws -l | sed -n "${__ws}p" | awk '{print $NF}')
   fi
+  echo "$__ws"
+  roscd $__ws
+  return
+
 }
 
 __rosrc() {
