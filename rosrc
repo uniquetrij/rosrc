@@ -24,7 +24,8 @@ rosws() {
 
 roscd() {
   if [ ! -z "$1" ]; then
-    if [ -d $1 ]; then
+    if [ -d $1 ]; /fun_topic
+
       if [ ! -f $1/install/setup.bash ]; then
         echo "🗷 error: '$1' is not a ros workspace"
         return
@@ -213,7 +214,9 @@ __rosrc() {
     fi
   }
 
-  rostopecho() { ros2 topic echo "$1"; }
+  rosrun() { ros2 run "$@"; }
+
+  rosecho() { ros2 topic echo "$1"; }
 
   rosiff() {
     echo '############## Description ##############'
