@@ -12,7 +12,7 @@ rosws() {
     return
   fi
   if [ "$1" == "-l" ]; then
-    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | nl
+    find $ROS_WS_HOME -type d -name "install" -exec sh -c 'test -f "$0/setup.bash" && echo "$0"' {} \; | sed 's:/install::' | awk -v rosws="$(rosws)" '{if ($0 == rosws) print "\033[0;32m* "$0"\033[0m"; else print "  "$0}' | nl
     return
   fi
   if [ "$1" == "-c" ]; then
@@ -35,6 +35,16 @@ roscd() {
       fi
       cd $1
       rosactivate
+      return
+    elif [ "$1" == "-s" ]; then
+      rosws -l
+      echo "Select workspace to cd into:"
+      read -a __ws
+      if [[ ${__ws} =~ ^[0-9]+$ ]]; then
+        __ws=$(rosws -l | sed -n "${__ws}p" | awk '{print $NF}')
+      fi
+      echo "$__ws"
+      roscd $__ws
       return
     fi
   fi
