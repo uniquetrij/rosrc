@@ -25,7 +25,6 @@ rosws() {
 roscd() {
   if [ ! -z "$1" ]; then
     if [ -d $1 ]; /fun_topic
-
       if [ ! -f $1/install/setup.bash ]; then
         echo "🗷 error: '$1' is not a ros workspace"
         return
