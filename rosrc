@@ -24,14 +24,15 @@ rosws() {
 
 roscd() {
   if [ ! -z "$1" ]; then
-    if [ -d $1 ]; /fun_topic
+    if [ -d $1 ]; then
       if [ ! -f $1/install/setup.bash ]; then
         echo "🗷 error: '$1' is not a ros workspace"
         return
+      else
+        cd $1
+        rosactivate
+        return
       fi
-      cd $1
-      rosactivate
-      return
     elif [ "$1" == "-c" ]; then
       if [ ! -d "$ROS_WS" ]; then
         echo "🗷 error: $ROS_WS does not exist"
@@ -56,7 +57,6 @@ roscd() {
   fi
   echo "$__ws"
   roscd $__ws
-  return
 
 }
 
@@ -177,9 +177,15 @@ __rosrc() {
       __packages=()
       for i in "$@"; do
         if [[ ! $i =~ ^src/ ]]; then
-          __packages+=("src/$i")
+          __tmp=("src/$i")
         else
-          __packages+=("$i")
+          __tmp=("$i")
+        fi
+        if [ -d $(rosws)/"${__tmp}" ]; then
+          __packages+=("${__tmp}")
+        else
+          echo "also checked path '${__tmp}', but it too does not exist"
+          return 1
         fi
       done
       __rosdepi "${__packages[@]}"
@@ -197,8 +203,9 @@ __rosrc() {
         __rosdepi src/
         return
       fi
-      # If the package names are numbers, get the package names from the list
+
       for i in "${!__packages[@]}"; do
+        # If the package names are numbers, get the package names from the list
         if [[ ${__packages[$i]} =~ ^[0-9]+$ ]]; then
           __packages[$i]=$(rosls | sed -n "${__packages[$i]}p" | awk '{print $2}')
           # if __packages[$i] doesn't start with src/ then prepend src/
@@ -207,6 +214,7 @@ __rosrc() {
           fi
         fi
       done
+      ulimit -s 1
       __rosdepi "${__packages[@]}"
     else
       __rosdepi "$@"
