@@ -155,11 +155,11 @@ __rosrc() {
 
   rosnewcm() { __rosnew ament_cmake "$1" "$@"; }
 
-  alias rospkgs='ros2 pkg list'
-  alias rosnds='ros2 node list'
+  alias rospacks='ros2 pkg list'
+  alias rosnodes='ros2 node list'
   alias rostops='ros2 topic list'
   alias rosifs='ros2 interface list'
-  alias rossrvs='ros2 service list'
+  alias rosservs='ros2 service list'
   alias rosacts='ros2 action list'
 
   rosvtf() {
@@ -331,7 +331,7 @@ rosactivate() {
     echo "🗹 symlink created, activating rosrc"
     __rosrc
     echo "🗹 ros workspace activated"
-
+    
   else
     if [ ! "$1" == "--quite" ]; then
       echo "🗷 no ros workspace detected, please run 'rosinit' to initialize a new workspace"
@@ -363,3 +363,4 @@ rosuninstall() {
 
 rosactivate --quite
 # <<< ros initialize <<<
+
