@@ -319,6 +319,9 @@ rosinstall() {
   export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
   # Make ROS2 python modules available to conda environment
   echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" | sudo tee $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth >/dev/null
+  # Initialize and update rosdep installation
+  sudo rosdep init
+  rosdep update
   # Create ROS2 workspace
   mkdir -p ~/Workspace/ros
 }
