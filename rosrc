@@ -315,7 +315,7 @@ rosinstall() {
     $CONDA_EXEC init && source ~/.bashrc
   fi
   # Create conda environment for ROS2
-  $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO python=$PYTHON_VERSION catkin_pkg
+  $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO -c conda-forge python=$PYTHON_VERSION catkin_pkg
   export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
   # Make ROS2 python modules available to conda environment
   echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" | sudo tee $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth >/dev/null
