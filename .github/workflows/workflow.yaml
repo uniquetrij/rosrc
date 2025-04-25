@@ -21,9 +21,9 @@ jobs:
       shell: bash
       run: |
         if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
-          echo "Installation successful."
+          echo "ROS 2 Installation successful."
         else
-          echo "Installation failed."
+          echo "ROS 2 Installation failed."
           exit 1
         fi
 
@@ -40,13 +40,30 @@ jobs:
     - name: Verify Python Venv Installation
       shell: bash
       run: |
-        conda init
-        source ~/.bashrc
-        conda activate $(ls /opt/ros/)
-        if [ ! -z "$(python -V)" ]; then
+        if [ ! -z "$($(conda env list | grep $(ls /opt/ros/) | awk '{print $2}')/bin/python -V)" ]; then
           echo "Python venv installation successful."
         else
           echo "Python venv installation failed."
+          exit 1
+        fi
+
+    - name: Verify Workspace Created
+      shell: bash
+      run: |
+        if [ -d ~/Workspace/ros ]; then
+          echo "Workspace created successfully."
+        else
+          echo "Workspace creation failed."
+          exit 1
+        fi
+
+    - name: Verify ROS 2 python modules available to conda environment
+      shell: bash
+      run: |
+        if [ -f $(conda env list | grep $(ls /opt/ros/) | awk '{print $2}')/lib/python*/site-packages/$(ls /opt/ros/).pth ]; then
+          echo "ROS 2 python modules available to conda environment."
+        else
+          echo "ROS 2 python modules not available to conda environment."
           exit 1
         fi
 
