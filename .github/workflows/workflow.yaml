@@ -1,0 +1,15 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+    - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Execute Installer
+      run: |
+        wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/main/ros-installer.sh | sh
