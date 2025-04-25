@@ -17,7 +17,7 @@ jobs:
         wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${branch:-main}/ros-installer.sh | sh
 
     - name: Verify ROS 2 Installation
-      if: false
+      # if: false
       shell: bash
       run: |
         if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
@@ -40,7 +40,9 @@ jobs:
     - name: Verify Python Venv Installation
       shell: bash
       run: |
-        if [ ! -z "$(conda init && activate $(ls /opt/ros/) && python -V)" ]; then
+        conda init
+        conda activate $(ls /opt/ros/)
+        if [ ! -z "$(python -V)" ]; then
           echo "Python venv installation successful."
         else
           echo "Python venv installation failed."
@@ -48,7 +50,7 @@ jobs:
         fi
 
   merge:
-    if: false
+    # if: false
     needs: install
     runs-on: ubuntu-24.04
 
