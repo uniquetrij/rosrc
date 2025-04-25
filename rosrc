@@ -328,7 +328,7 @@ rosinstall() {
   # # Create ROS2 workspace
   # mkdir -p ~/Workspace/ros
 
-  echo "$(conda activate jazzy && python -V)"
+  conda activate jazzy && python -V
 }
 
 rosactivate() {
