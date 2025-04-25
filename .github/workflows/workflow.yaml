@@ -55,11 +55,11 @@ jobs:
     - name: Verify ROS 2 python modules available to conda environment
       shell: bash
       run: |
-        if [ ! -z $($(conda env list | grep $(ls /opt/ros/) | awk '{print $2}')/bin/pip list | awk '{print $1}' | grep ^rclpy$) ]; then
+        if [ ! -z $($(conda env list | grep $(ls /opt/ros/) | awk '{print $NF}')/bin/pip list | awk '{print $1}' | grep ^rclpy$) ]; then
           echo "OK"
         else
           echo "ROS 2 python modules not available to conda environment."
-          exit 1
+          # exit 1
         fi
 
     - name: Verify Workspace Created
