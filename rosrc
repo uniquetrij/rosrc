@@ -310,8 +310,9 @@ rosinstall() {
   if [ ! -d $CONDA_HOME ]; then
     # Install Miniconda3 for Python3 virtual environment
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
-    sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_HOME
+    sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -f -b -p $CONDA_HOME 
     sudo chown -R $USER:$USER $CONDA_HOME ~/.condarc ~/.conda ~/.continuum 2>/dev/null
+    $CONDA_HOME/bin/activate
     $CONDA_EXEC init 
     source ~/.bashrc
   fi
