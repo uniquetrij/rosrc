@@ -37,7 +37,7 @@ jobs:
 
     - name: Verify Python Venv Installation
       run: |
-        if [ ! -z "$(conda activate $(ls /opt/ros/) && python -V)" ]; then
+        if [ ! -z "$(conda activate jazzy && python -V)" ]; then
           echo "Python venv installation successful."
         else
           echo "Python venv installation failed."
