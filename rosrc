@@ -313,11 +313,12 @@ rosinstall() {
     sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -f -b -p $CONDA_HOME 
     sudo chown -R $USER:$USER $CONDA_HOME ~/.condarc ~/.conda ~/.continuum 2>/dev/null
     $CONDA_HOME/bin/activate
-    $CONDA_EXEC init 
+    conda init 
     source ~/.bashrc
   fi
+  PYTHON_VERSION=3.12
   # Create conda environment for ROS2
-  $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO -c conda-forge python=$PYTHON_VERSION catkin_pkg
+  conda create -y -p $CONDA_HOME/envs/$ROS_DISTRO -c conda-forge python=$PYTHON_VERSION catkin_pkg
   # export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
   # # Make ROS2 python modules available to conda environment
   # echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" | sudo tee $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth >/dev/null
