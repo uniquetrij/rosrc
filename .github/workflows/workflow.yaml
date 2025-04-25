@@ -10,58 +10,65 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-    - name: Execute Installer
+    - name: Check
       run: |
-        wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${{ github.ref_name }}/ros-installer.sh | sh
-
-    - name: Verify ROS 2 Installation
-      if: false
-      run: |
-        if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
-          echo "Installation successful."
+        if [ "$GITHUB_ACTIONS" = "true" ]; then
+          echo "Running in GitHub Actions workflow."
         else
-          echo "Installation failed."
-          exit 1
+          echo "Running locally."
         fi
+  #   - name: Execute Installer
+  #     run: |
+  #       wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${{ github.ref_name }}/ros-installer.sh | sh
 
-    - name: Verify Miniconda3 Installation
-      run: |
-        if [ ! -z "(conda -V)" ]; then
-          echo "Miniconda3 installation successful."
-        else
-          echo "Miniconda3 installation failed."
-          exit 1
-        fi
+  #   - name: Verify ROS 2 Installation
+  #     if: false
+  #     run: |
+  #       if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
+  #         echo "Installation successful."
+  #       else
+  #         echo "Installation failed."
+  #         exit 1
+  #       fi
 
-    - name: Verify Python Venv Installation
-      run: |
-        if [ ! -z "$(conda activate $(ls /opt/ros/) && python -V)" ]; then
-          echo "Python venv installation successful."
-        else
-          echo "Python venv installation failed."
-          exit 1
-        fi
+  #   - name: Verify Miniconda3 Installation
+  #     run: |
+  #       if [ ! -z "(conda -V)" ]; then
+  #         echo "Miniconda3 installation successful."
+  #       else
+  #         echo "Miniconda3 installation failed."
+  #         exit 1
+  #       fi
 
-  merge:
-    needs: install
-    runs-on: ubuntu-24.04
+  #   - name: Verify Python Venv Installation
+  #     run: |
+  #       if [ ! -z "$(conda activate $(ls /opt/ros/) && python -V)" ]; then
+  #         echo "Python venv installation successful."
+  #       else
+  #         echo "Python venv installation failed."
+  #         exit 1
+  #       fi
 
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+  # merge:
+  #   needs: install
+  #   runs-on: ubuntu-24.04
 
-    - name: Configure Git
-      run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
+  #   steps:
+  #   - name: Checkout Code
+  #     uses: actions/checkout@v3
 
-    - name: Merge dev into main
-      run: |
-        git checkout main
-        git merge dev --no-ff -m "Merge dev into main via GitHub Actions"
+  #   - name: Configure Git
+  #     run: |
+  #       git config user.name "GitHub Actions"
+  #       git config user.email "actions@github.com"
 
-    - name: Push Changes
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git push origin main
+  #   - name: Merge dev into main
+  #     run: |
+  #       git checkout main
+  #       git merge dev --no-ff -m "Merge dev into main via GitHub Actions"
+
+  #   - name: Push Changes
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     run: |
+  #       git push origin main

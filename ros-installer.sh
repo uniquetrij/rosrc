@@ -8,6 +8,9 @@ if [ -f ~/.rosrc ]; then
   mv ~/.rosrc ~/.rosrc.stale.$(date +%Y%m%d%H%M%S.%s)
 fi
 
+# check if running in github workflow
+
+
 # Download the latest version of the rosrc file from the GitHub repository
 curl -s https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/main/rosrc > ~/.rosrc
 
