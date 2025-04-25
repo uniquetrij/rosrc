@@ -3,7 +3,7 @@ export ROS_WS_HOME=~/Workspace/ros
 export ROS_WS=~/ros2_ws
 export ROS_LOCAL_SETUP=${ROS_WS}/install/setup.bash
 export CONDA_HOME=/opt/miniconda3
-export CONDA_EXEC=$CONDA_HOME/condabin/conda
+export CONDA_EXEC=$CONDA_HOME/bin/conda
 export QT_QPA_PLATFORMTHEME=gtk2
 
 rosws() {
@@ -312,7 +312,8 @@ rosinstall() {
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
     sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_HOME
     sudo chown -R $USER:$USER $CONDA_HOME ~/.condarc ~/.conda ~/.continuum 2>/dev/null
-    $CONDA_EXEC init && source ~/.bashrc
+    $CONDA_EXEC init 
+    source ~/.bashrc
   fi
   # Create conda environment for ROS2
   $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO -c conda-forge python=$PYTHON_VERSION catkin_pkg

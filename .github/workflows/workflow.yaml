@@ -1,0 +1,90 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+    - dev
+
+jobs:
+  install:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      with:
+        detached: true
+
+    - name: Execute Installer
+      shell: bash
+      env:
+        branch: ${{ github.ref_name }}
+      run: |
+        wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${branch:-main}/ros-installer.sh | sh
+
+    - name: Verify ROS 2 Installation
+      # if: false
+      shell: bash
+      run: |
+        if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
+          echo "OK"
+        else
+          echo "ROS 2 Installation failed."
+          exit 1
+        fi
+
+    - name: Verify Miniconda3 Installation
+      shell: bash
+      run: |
+        if [ ! -z "(conda -V)" ]; then
+          echo "OK"
+        else
+          echo "Miniconda3 installation failed."
+          exit 1
+        fi
+
+    - name: Verify Python Venv Installation
+      shell: bash
+      run: |
+        if [ ! -z "$($(conda env list | grep $(ls /opt/ros/) | awk '{print $NF}')/bin/python -V)" ]; then
+          echo "OK"
+        else
+          echo "Python venv installation failed."
+          exit 1
+        fi
+
+    - name: Verify ROS 2 python modules available to conda environment
+      shell: bash
+      run: |
+        if [ ! -z $($(conda env list | grep $(ls /opt/ros/) | awk '{print $NF}')/bin/pip list | awk '{print $1}' | grep ^rclpy$) ]; then
+          echo "OK"
+        else
+          echo "ROS 2 python modules not available to conda environment."
+          # exit 1
+        fi
+
+    - name: Verify Workspace Created
+      shell: bash
+      run: |
+        if [ -d ~/Workspace/ros ]; then
+          echo "OK"
+        else
+          echo "Workspace creation failed."
+          exit 1
+        fi
+
+  merge:
+    # if: false
+    needs: install
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Merge dev -> main
+      uses: devmasx/merge-branch@master
+      with:
+        type: now
+        from_branch: dev
+        target_branch: main
+        github_token: ${{ secrets.GITHUB_TOKEN }}
