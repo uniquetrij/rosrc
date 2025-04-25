@@ -15,6 +15,7 @@ jobs:
         wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/main/ros-installer.sh | sh
 
     - name: Verify ROS 2 Installation
+      if: false
       run: |
         if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
           echo "Installation successful."

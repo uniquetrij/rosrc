@@ -286,44 +286,45 @@ __rosrc() {
 
 # >>> ros initialize >>>
 rosinstall() {
-  # Enable Ubuntu Universe repo
-  sudo apt install --reinstall -y software-properties-common
-  sudo add-apt-repository -y universe
-  # Add ROS2 GPG key
-  sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-  # Add ROS2 repo
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list >/dev/null
-  # Enable development tools
-  sudo apt update && sudo apt install --reinstall -y ros-dev-tools
-  sudo apt update && sudo apt upgrade -y
-  # Install ROS, RViz, Demos, Tutorials
-  sudo apt install --reinstall -y ros-$ROS_DISTRO-desktop
-  # Install Gazebo Simulation for your robots
-  sudo apt install --reinstall -y ros-$ROS_DISTRO-ros-gz
-  # Install ROS2 command line tools
-  sudo apt install --reinstall -y ros-$ROS_DISTRO-urdf-tutorial
-  # Install plugins for rviz dark theme
-  sudo apt install --reinstall -y qt5-style-plugins
-  # Find which python version ROS2 is using
-  export PYTHON_VERSION=$(ls /opt/ros/$ROS_DISTRO/lib/ | grep -oP 'python\K[0-9.]+')
-  # Check if miniconda installed
+  # # Enable Ubuntu Universe repo
+  # sudo apt install --reinstall -y software-properties-common
+  # sudo add-apt-repository -y universe
+  # # Add ROS2 GPG key
+  # sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+  # # Add ROS2 repo
+  # echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list >/dev/null
+  # # Enable development tools
+  # sudo apt update && sudo apt install --reinstall -y ros-dev-tools
+  # sudo apt update && sudo apt upgrade -y
+  # # Install ROS, RViz, Demos, Tutorials
+  # sudo apt install --reinstall -y ros-$ROS_DISTRO-desktop
+  # # Install Gazebo Simulation for your robots
+  # sudo apt install --reinstall -y ros-$ROS_DISTRO-ros-gz
+  # # Install ROS2 command line tools
+  # sudo apt install --reinstall -y ros-$ROS_DISTRO-urdf-tutorial
+  # # Install plugins for rviz dark theme
+  # sudo apt install --reinstall -y qt5-style-plugins
+  # # Find which python version ROS2 is using
+  # export PYTHON_VERSION=$(ls /opt/ros/$ROS_DISTRO/lib/ | grep -oP 'python\K[0-9.]+')
+  # # Check if miniconda installed
   if [ ! -d $CONDA_HOME ]; then
     # Install Miniconda3 for Python3 virtual environment
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
     sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_HOME
     sudo chown -R $USER:$USER $CONDA_HOME ~/.condarc ~/.conda ~/.continuum 2>/dev/null
-    $CONDA_EXEC init && source ~/.bashrc
+    $CONDA_EXEC init 
+    source ~/.bashrc
   fi
   # Create conda environment for ROS2
   $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO -c conda-forge python=$PYTHON_VERSION catkin_pkg
-  export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
-  # Make ROS2 python modules available to conda environment
-  echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" | sudo tee $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth >/dev/null
-  # Initialize and update rosdep installation
-  sudo rosdep init
-  rosdep update
-  # Create ROS2 workspace
-  mkdir -p ~/Workspace/ros
+  # export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
+  # # Make ROS2 python modules available to conda environment
+  # echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" | sudo tee $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth >/dev/null
+  # # Initialize and update rosdep installation
+  # sudo rosdep init
+  # rosdep update
+  # # Create ROS2 workspace
+  # mkdir -p ~/Workspace/ros
 }
 
 rosactivate() {
