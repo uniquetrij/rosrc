@@ -14,6 +14,7 @@ jobs:
         branch: ${{ github.ref_name }}
       run: |
         wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${branch:-main}/ros-installer.sh | sh
+        cat ~/.bashrc
 
     - name: Verify ROS 2 Installation
       if: false
