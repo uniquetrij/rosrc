@@ -41,6 +41,7 @@ jobs:
       shell: bash
       run: |
         conda init
+        source ~/.bashrc
         conda activate $(ls /opt/ros/)
         if [ ! -z "$(python -V)" ]; then
           echo "Python venv installation successful."
