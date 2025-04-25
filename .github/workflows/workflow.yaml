@@ -25,7 +25,7 @@ jobs:
 
     - name: Verify Miniconda3 Installation
       run: |
-        if [ ! -z $(conda -V) ]; then
+        if [ ! -z "(conda -V)" ]; then
           echo "Miniconda3 installation successful."
         else
           echo "Miniconda3 installation failed."
@@ -34,7 +34,7 @@ jobs:
 
     - name: Verify Python Venv Installation
       run: |
-        if [ ! -z $(conda activate $(ls /opt/ros/)) ]; then
+        if [ ! -z "$(conda activate $(ls /opt/ros/) && python -V)" ]; then
           echo "Python venv installation successful."
         else
           echo "Python venv installation failed."
