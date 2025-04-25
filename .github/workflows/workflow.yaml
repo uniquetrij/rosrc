@@ -45,7 +45,7 @@ jobs:
     - name: Verify Python Venv Installation
       shell: bash
       run: |
-        if [ ! -z "$($(conda env list | grep $(ls /opt/ros/) | awk '{print $2}')/bin/python -V)" ]; then
+        if [ ! -z "$($(conda env list | grep $(ls /opt/ros/) | awk '{print $NF}')/bin/python -V)" ]; then
           echo "OK"
         else
           echo "Python venv installation failed."
