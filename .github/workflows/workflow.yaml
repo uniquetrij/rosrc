@@ -21,7 +21,7 @@ jobs:
       shell: bash
       run: |
         if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
-          echo "ROS 2 Installation successful."
+          echo "OK"
         else
           echo "ROS 2 Installation failed."
           exit 1
@@ -31,7 +31,7 @@ jobs:
       shell: bash
       run: |
         if [ ! -z "(conda -V)" ]; then
-          echo "Miniconda3 installation successful."
+          echo "OK"
         else
           echo "Miniconda3 installation failed."
           exit 1
@@ -41,7 +41,7 @@ jobs:
       shell: bash
       run: |
         if [ ! -z "$($(conda env list | grep $(ls /opt/ros/) | awk '{print $2}')/bin/python -V)" ]; then
-          echo "Python venv installation successful."
+          echo "OK"
         else
           echo "Python venv installation failed."
           exit 1
@@ -50,8 +50,8 @@ jobs:
     - name: Verify ROS 2 python modules available to conda environment
       shell: bash
       run: |
-        if [ ! -z "$(conda env list | grep $(ls /opt/ros/) | awk '{print $2}')/bin/pip list | awk '{print $1}' | grep ^rclpy$ ]; then
-          echo "ROS 2 python modules available to conda environment."
+        if [ ! -z $($(conda env list | grep $(ls /opt/ros/) | awk '{print $2}')/bin/pip list | awk '{print $1}' | grep ^rclpy$) ]; then
+          echo "OK"
         else
           echo "ROS 2 python modules not available to conda environment."
           exit 1
@@ -61,7 +61,7 @@ jobs:
       shell: bash
       run: |
         if [ -d ~/Workspace/ros ]; then
-          echo "Workspace created successfully."
+          echo "OK"
         else
           echo "Workspace creation failed."
           exit 1
