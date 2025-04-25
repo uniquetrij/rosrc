@@ -12,7 +12,7 @@ jobs:
     steps:
     - name: Execute Installer
       run: |
-        wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/main/ros-installer.sh | sh
+        wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${{ github.ref_name }}/ros-installer.sh | sh
 
     - name: Verify ROS 2 Installation
       if: false
