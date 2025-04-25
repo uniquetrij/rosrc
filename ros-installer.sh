@@ -20,7 +20,7 @@ bash -c "source ~/.rosrc && rosinstall"
 # Download and execute the extrc-installer.sh script from the GitHub repository
 curl -s https://raw.githubusercontent.com/uniquetrij/bashrc-extensions/refs/heads/main/extrc-installer.sh | sh
 
-echo "==> For changes to take effect, close and re-open your current shell. <=="
+echo "==> For changes to take effect, it is best to close and re-open your current shell. <=="
 
 # Start bash shell
 bash 
