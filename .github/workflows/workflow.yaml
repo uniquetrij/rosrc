@@ -17,6 +17,15 @@ jobs:
         else
           echo "Running locally."
         fi
+
+        if "CI" not in os.environ or not os.environ["CI"] or "GITHUB_RUN_ID" not in os.environ:
+            return False
+
+        headers = {"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"}
+        url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+        response = requests.get(url, headers=headers)
+
+        return response.status_code == 200 and "workflow_runs" in response.json()
   #   - name: Execute Installer
   #     run: |
   #       wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${{ github.ref_name }}/ros-installer.sh | sh
