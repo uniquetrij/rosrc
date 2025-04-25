@@ -8,38 +8,21 @@ on:
 jobs:
   install:
     runs-on: ubuntu-24.04
-
     steps:
-    - name: Check
+    - name: Execute Installer
+      env:
+        branch: ${{ github.ref_name }}
       run: |
-        if [ "$GITHUB_ACTIONS" = "true" ]; then
-          echo "Running in GitHub Actions workflow."
+        wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${branch:-main}/ros-installer.sh | sh
+    - name: Verify ROS 2 Installation
+      if: false
+      run: |
+        if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
+          echo "Installation successful."
         else
-          echo "Running locally."
+          echo "Installation failed."
+          exit 1
         fi
-
-        if "CI" not in os.environ or not os.environ["CI"] or "GITHUB_RUN_ID" not in os.environ:
-            return False
-
-        headers = {"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"}
-        url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
-        response = requests.get(url, headers=headers)
-
-        return response.status_code == 200 and "workflow_runs" in response.json()
-  #   - name: Execute Installer
-  #     run: |
-  #       wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${{ github.ref_name }}/ros-installer.sh | sh
-
-  #   - name: Verify ROS 2 Installation
-  #     if: false
-  #     run: |
-  #       if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
-  #         echo "Installation successful."
-  #       else
-  #         echo "Installation failed."
-  #         exit 1
-  #       fi
-
   #   - name: Verify Miniconda3 Installation
   #     run: |
   #       if [ ! -z "(conda -V)" ]; then
