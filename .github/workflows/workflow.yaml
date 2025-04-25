@@ -15,60 +15,59 @@ jobs:
         branch: ${{ github.ref_name }}
       run: |
         wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${branch:-main}/ros-installer.sh | sh
-        cat ~/.bashrc
+        conda activate base && python -V
+  #   - name: Verify ROS 2 Installation
+  #     if: false
+  #     shell: bash
+  #     run: |
+  #       if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
+  #         echo "Installation successful."
+  #       else
+  #         echo "Installation failed."
+  #         exit 1
+  #       fi
 
-    - name: Verify ROS 2 Installation
-      if: false
-      shell: bash
-      run: |
-        if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
-          echo "Installation successful."
-        else
-          echo "Installation failed."
-          exit 1
-        fi
+  #   - name: Verify Miniconda3 Installation
+  #     shell: bash
+  #     run: |
+  #       if [ ! -z "(conda -V)" ]; then
+  #         echo "Miniconda3 installation successful."
+  #       else
+  #         echo "Miniconda3 installation failed."
+  #         exit 1
+  #       fi
 
-    - name: Verify Miniconda3 Installation
-      shell: bash
-      run: |
-        if [ ! -z "(conda -V)" ]; then
-          echo "Miniconda3 installation successful."
-        else
-          echo "Miniconda3 installation failed."
-          exit 1
-        fi
+  #   - name: Verify Python Venv Installation
+  #     shell: bash
+  #     run: |
+  #       if [ ! -z "$(conda activate jazzy && python -V)" ]; then
+  #         echo "Python venv installation successful."
+  #       else
+  #         echo "Python venv installation failed."
+  #         exit 1
+  #       fi
 
-    - name: Verify Python Venv Installation
-      shell: bash
-      run: |
-        if [ ! -z "$(conda activate jazzy && python -V)" ]; then
-          echo "Python venv installation successful."
-        else
-          echo "Python venv installation failed."
-          exit 1
-        fi
+  # merge:
+  #   if: false
+  #   needs: install
+  #   runs-on: ubuntu-24.04
 
-  merge:
-    if: false
-    needs: install
-    runs-on: ubuntu-24.04
+  #   steps:
+  #   - name: Checkout Code
+  #     uses: actions/checkout@v3
 
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+  #   - name: Configure Git
+  #     run: |
+  #       git config user.name "GitHub Actions"
+  #       git config user.email "actions@github.com"
 
-    - name: Configure Git
-      run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
+  #   - name: Merge dev into main
+  #     run: |
+  #       git checkout main
+  #       git merge dev --no-ff -m "Merge dev into main via GitHub Actions"
 
-    - name: Merge dev into main
-      run: |
-        git checkout main
-        git merge dev --no-ff -m "Merge dev into main via GitHub Actions"
-
-    - name: Push Changes
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        git push origin main
+  #   - name: Push Changes
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     run: |
+  #       git push origin main

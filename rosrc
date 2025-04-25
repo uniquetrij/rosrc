@@ -3,7 +3,7 @@ export ROS_WS_HOME=~/Workspace/ros
 export ROS_WS=~/ros2_ws
 export ROS_LOCAL_SETUP=${ROS_WS}/install/setup.bash
 export CONDA_HOME=/opt/miniconda3
-export CONDA_EXEC=$CONDA_HOME/condabin/conda
+export CONDA_EXEC=$CONDA_HOME/bin/conda
 export QT_QPA_PLATFORMTHEME=gtk2
 
 rosws() {
@@ -306,19 +306,17 @@ rosinstall() {
   # sudo apt install --reinstall -y qt5-style-plugins
   # # Find which python version ROS2 is using
   # export PYTHON_VERSION=$(ls /opt/ros/$ROS_DISTRO/lib/ | grep -oP 'python\K[0-9.]+')
-  # # Check if miniconda installed
+  # Check if miniconda installed
   if [ ! -d $CONDA_HOME ]; then
     # Install Miniconda3 for Python3 virtual environment
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
-    sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -f -b -p $CONDA_HOME 
+    sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_HOME
     sudo chown -R $USER:$USER $CONDA_HOME ~/.condarc ~/.conda ~/.continuum 2>/dev/null
-    $CONDA_HOME/bin/activate
-    conda init 
+    $CONDA_EXEC init 
     source ~/.bashrc
   fi
-  PYTHON_VERSION=3.12
   # Create conda environment for ROS2
-  conda create -y -p $CONDA_HOME/envs/$ROS_DISTRO -c conda-forge python=$PYTHON_VERSION catkin_pkg
+  $CONDA_EXEC create -y -p $CONDA_HOME/envs/$ROS_DISTRO -c conda-forge python=$PYTHON_VERSION catkin_pkg
   # export ENV_PATH=$($CONDA_EXEC env list | grep $ROS_DISTRO | awk '{print $NF}')
   # # Make ROS2 python modules available to conda environment
   # echo "/opt/ros/$ROS_DISTRO/lib/python$PYTHON_VERSION/site-packages/" | sudo tee $ENV_PATH/lib/python$PYTHON_VERSION/site-packages/$ROS_DISTRO.pth >/dev/null
@@ -327,8 +325,6 @@ rosinstall() {
   # rosdep update
   # # Create ROS2 workspace
   # mkdir -p ~/Workspace/ros
-
-  conda activate jazzy && python -V
 }
 
 rosactivate() {
