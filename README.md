@@ -5,6 +5,10 @@
 I've condensed the complete basic setup into an one-liner named ros-installer.sh that does everything for you. Next, YKWTD:
 
 ```
+wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/main/ros-installer.sh | sh
+```
+Or if you have prefer `curl` and have it installed:
+```
 curl -s https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/main/ros-installer.sh | sh
 ```
 
