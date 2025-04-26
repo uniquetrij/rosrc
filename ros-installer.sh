@@ -15,7 +15,7 @@ if [ -f ~/.rosrc ]; then
 fi
 
 # Download the latest version of the rosrc file from the GitHub repository
-curl -s https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/${branch:-main}/rosrc >~/.rosrc
+curl -s https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/${ROSRC_GIT_BRANCH:-main}/rosrc >~/.rosrc
 
 # Add a command to source the .rosrc file in .bashrc if it is not already present
 grep -q "source ~/.rosrc" ~/.bashrc || echo "source ~/.rosrc" >>~/.bashrc

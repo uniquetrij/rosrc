@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Setup tmate session
-      if: false
+      # if: false
       uses: mxschmitt/action-tmate@v3
       with:
         detached: true
@@ -18,9 +18,10 @@ jobs:
     - name: Execute Installer
       shell: bash
       env:
-        branch: ${{ github.ref_name }}
+        ROS_DISTRO: rolling
+        ROSRC_GIT_BRANCH: ${{ github.ref_name }}
       run: |
-        wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${branch:-main}/ros-installer.sh | sh
+        wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${ROSRC_GIT_BRANCH:-main}/ros-installer.sh | sh
 
     - name: Verify ROS 2 Installation
       # if: false
@@ -74,7 +75,7 @@ jobs:
         fi
 
   merge:
-    # if: false
+    if: false
     needs: install
     runs-on: ubuntu-24.04
 

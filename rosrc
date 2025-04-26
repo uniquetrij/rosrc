@@ -1,10 +1,26 @@
-export ROS_DISTRO=jazzy
+#!/bin/bash
+# =============================================================================
+# ROS Workspace Management Script
+# -----------------------------------------------------------------------------
+# This script provides utility functions for managing ROS2 workspaces, packages,
+# and dependencies. It includes commands for workspace navigation, package
+# creation, building, and more.
+#
+# Author: Trijeet Modak
+# Date: April 26, 2025
+# Version: 1.0.7
+# Commit Hash: 18ca6e9d095bf74f936a16c4d60418d4b3cdc60e
+# =============================================================================
+
+export ROS_DISTRO=${ROS_DISTRO:-jazzy}
 export ROS_WS_HOME=~/Workspace/ros
 export ROS_WS=~/ros2_ws
 export ROS_LOCAL_SETUP=${ROS_WS}/install/setup.bash
 export CONDA_HOME=/opt/miniconda3
 export CONDA_EXEC=$CONDA_HOME/bin/conda
 export QT_QPA_PLATFORMTHEME=gtk2
+
+shopt -s extglob
 
 rosws() {
   if [ "$1" == "-t" ]; then
@@ -62,7 +78,25 @@ roscd() {
 
 __rosrc() {
 
-  rosrc() { source ~/.rosrc; }
+  rosrc() {
+    # Check if the local .rosrc file exists
+    if [ -f ~/.rosrc ] && [ ! ping -c 1 -W 2 google.com ] >/dev/null 2>&1; then
+      # Fetch the remote version header without downloading the file
+      remote_version=$(curl -sI https://raw.githubusercontent.com/trijeetmodak/ros2_ws/main/.rosrc | grep -i 'etag' | awk '{print $2}' | tr -d '\r')
+      local_version=$(md5sum ~/.rosrc | awk '{print $1}')
+
+      # Compare the remote version with the local version
+      if [ "$remote_version" != "$local_version" ]; then
+        echo "🗹 Updating ~/.rosrc to the latest version..."
+        curl -s -o ~/.rosrc https://raw.githubusercontent.com/trijeetmodak/ros2_ws/main/.rosrc
+      else
+        echo "🗹 Checked ~/.rosrc is up-to-date"
+      fi
+    fi
+
+    # Source the .rosrc file
+    source ~/.rosrc
+  }
 
   rosls() {
     roscd -c
@@ -73,7 +107,7 @@ __rosrc() {
 
   rosclean() {
     roscd -c
-    rm -rf build/ install/ log/
+    rm -rf !(src)
     unset AMENT_PREFIX_PATH
     unset CMAKE_PREFIX_PATH
     stty -echo
@@ -172,7 +206,7 @@ __rosrc() {
   rosvurdf() { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; }
 
   __rosdepi() {
-    if ! rosdep install --from-paths "$@" --ignore-src -r -y -v; then
+    if ! rosdep install --rosdistro $ROS_DISTRO --from-paths "$@" --ignore-src -r -y -v; then
       # prepend src/ to the package names
       __packages=()
       for i in "$@"; do
@@ -214,7 +248,6 @@ __rosrc() {
           fi
         fi
       done
-      ulimit -s 1
       __rosdepi "${__packages[@]}"
     else
       __rosdepi "$@"
@@ -312,7 +345,7 @@ rosinstall() {
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
     sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_HOME
     sudo chown -R $USER:$USER $CONDA_HOME ~/.condarc ~/.conda ~/.continuum 2>/dev/null
-    $CONDA_EXEC init 
+    $CONDA_EXEC init
     source ~/.bashrc
   fi
   # Create conda environment for ROS2
@@ -335,7 +368,7 @@ rosactivate() {
     echo "🗹 symlink created, activating rosrc"
     __rosrc
     echo "🗹 ros workspace activated"
-    
+
   else
     if [ ! "$1" == "--quite" ]; then
       echo "🗷 no ros workspace detected, please run 'rosinit' to initialize a new workspace"
@@ -367,4 +400,3 @@ rosuninstall() {
 
 rosactivate --quite
 # <<< ros initialize <<<
-
