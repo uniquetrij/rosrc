@@ -11,9 +11,10 @@
 # =============================================================================
 
 if [ -z "$GIT_DIR" ] && [ ! -d ".git" ] || [ -z "$GIT_INDEX_FILE" ]; then
-    chmod +x pre-commit
-    ln -s $(realpath "$0") .git/hooks/"$0"
-    echo "Updated pre-commit hook symlink"
+    HOOKS_DIR=$(git rev-parse --absolute-git-dir)/.git/hooks
+    ln -s $(realpath "$0") $HOOKS_DIR/"$0"
+    chmod +x $HOOKS_DIR/"$0"
+    echo "Hook <$0> installed as a symlink under $HOOKS_DIR"
     exit 1
 fi
 
