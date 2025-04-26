@@ -21,7 +21,7 @@ curl -s https://raw.githubusercontent.com/uniquetrij/rosrc/refs/heads/${ROSRC_GI
 grep -q "source ~/.rosrc" ~/.bashrc || echo "source ~/.rosrc" >>~/.bashrc
 
 # Source the .rosrc file and run the rosinstall command
-bash -c "source ~/.rosrc && $ROS_DISTRO=rolling rosinstall"
+bash -c "source ~/.rosrc && rosinstall"
 
 # Download and execute the extrc-installer.sh script from the GitHub repository
 curl -s https://raw.githubusercontent.com/uniquetrij/bashrc-extensions/refs/heads/main/extrc-installer.sh | sh
