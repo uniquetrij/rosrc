@@ -8,8 +8,8 @@
 #
 # Author: Trijeet Modak
 # Date: April 26, 2025
-# Version: 1.0.3
-# Commit Hash: 0083d7cbce5f5d26887bd739a57dc184f4a083a8
+# Version: 1.0.4
+# Commit Hash: 7fe43068e706d0cb142f90f546dd070c796846e4
 # =============================================================================
 
 export ROS_DISTRO=jazzy
@@ -105,7 +105,9 @@ __rosrc() {
 
   rosclean() {
     roscd -c
-    rm -rf build/ install/ log/
+    shopt -s extglob
+    rm -rf !(src)
+    shopt -u extglob
     unset AMENT_PREFIX_PATH
     unset CMAKE_PREFIX_PATH
     stty -echo
