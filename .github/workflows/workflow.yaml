@@ -21,6 +21,7 @@ jobs:
         ROS_DISTRO: jazzy
         ROSRC_GIT_BRANCH: ${{ github.ref_name }}
       run: |
+        shopt -s extglob
         wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${ROSRC_GIT_BRANCH:-main}/ros-installer.sh | sh
 
     - name: Verify ROS 2 Installation
