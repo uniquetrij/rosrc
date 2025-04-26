@@ -8,8 +8,8 @@
 #
 # Author: Trijeet Modak
 # Date: April 26, 2025
-# Version: 1.0.2
-# Commit Hash: d1a45af5d4ee9a6116dc648dbc0b840c127c1690
+# Version: 1.0.3
+# Commit Hash: 0083d7cbce5f5d26887bd739a57dc184f4a083a8
 # =============================================================================
 
 export ROS_DISTRO=jazzy
@@ -76,7 +76,25 @@ roscd() {
 
 __rosrc() {
 
-  rosrc() { source ~/.rosrc; }
+  rosrc() {
+    # Check if the local .rosrc file exists
+    if [ -f ~/.rosrc ] && [ ! ping -c 1 -W 2 google.com ] >/dev/null 2>&1; then
+      # Fetch the remote version header without downloading the file
+      remote_version=$(curl -sI https://raw.githubusercontent.com/trijeetmodak/ros2_ws/main/.rosrc | grep -i 'etag' | awk '{print $2}' | tr -d '\r')
+      local_version=$(md5sum ~/.rosrc | awk '{print $1}')
+
+      # Compare the remote version with the local version
+      if [ "$remote_version" != "$local_version" ]; then
+        echo "🗹 Updating ~/.rosrc to the latest version..."
+        curl -s -o ~/.rosrc https://raw.githubusercontent.com/trijeetmodak/ros2_ws/main/.rosrc
+      else
+        echo "🗹 Checked ~/.rosrc is up-to-date"
+      fi
+    fi
+
+    # Source the .rosrc file
+    source ~/.rosrc
+  }
 
   rosls() {
     roscd -c
