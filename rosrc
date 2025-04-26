@@ -1,3 +1,17 @@
+#!/bin/bash
+# =============================================================================
+# ROS Workspace Management Script
+# -----------------------------------------------------------------------------
+# This script provides utility functions for managing ROS2 workspaces, packages,
+# and dependencies. It includes commands for workspace navigation, package
+# creation, building, and more.
+#
+# Author: Trijeet Modak
+# Date: April 26, 2025
+# Version: 1.0.1
+# =============================================================================
+
+
 export ROS_DISTRO=jazzy
 export ROS_WS_HOME=~/Workspace/ros
 export ROS_WS=~/ros2_ws
