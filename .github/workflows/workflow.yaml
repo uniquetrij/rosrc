@@ -7,7 +7,7 @@ on:
 
 jobs:
   install:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.10
     steps:
     - name: Setup tmate session
       if: false
@@ -74,7 +74,7 @@ jobs:
         fi
 
   merge:
-    # if: false
+    if: false
     needs: install
     runs-on: ubuntu-24.04
 
