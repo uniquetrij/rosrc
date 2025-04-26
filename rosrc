@@ -8,11 +8,11 @@
 #
 # Author: Trijeet Modak
 # Date: April 26, 2025
-# Version: 1.0.5
-# Commit Hash: d76fa258844240faf78170e2ebc6c95b0058ddd9
+# Version: 1.0.6
+# Commit Hash: 365465194556225925ea95cdef01b9ef447dba0a
 # =============================================================================
 
-export ROS_DISTRO=jazzy
+export ROS_DISTRO=${ROS_DISTRO:-jazzy}
 export ROS_WS_HOME=~/Workspace/ros
 export ROS_WS=~/ros2_ws
 export ROS_LOCAL_SETUP=${ROS_WS}/install/setup.bash
@@ -206,7 +206,7 @@ __rosrc() {
   rosvurdf() { ros2 launch urdf_tutorial display.launch.py model:=${ROS_WSPACE}/"$1"; }
 
   __rosdepi() {
-    if ! rosdep install --from-paths "$@" --ignore-src -r -y -v; then
+    if ! rosdep install --rosdistro $ROS_DISTRO --from-paths "$@" --ignore-src -r -y -v; then
       # prepend src/ to the package names
       __packages=()
       for i in "$@"; do
