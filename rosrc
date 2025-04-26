@@ -214,7 +214,6 @@ __rosrc() {
           fi
         fi
       done
-      ulimit -s 1
       __rosdepi "${__packages[@]}"
     else
       __rosdepi "$@"
@@ -312,7 +311,7 @@ rosinstall() {
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/Miniconda3-latest-Linux-x86_64.sh
     sudo -E sh /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_HOME
     sudo chown -R $USER:$USER $CONDA_HOME ~/.condarc ~/.conda ~/.continuum 2>/dev/null
-    $CONDA_EXEC init 
+    $CONDA_EXEC init
     source ~/.bashrc
   fi
   # Create conda environment for ROS2
@@ -335,7 +334,7 @@ rosactivate() {
     echo "🗹 symlink created, activating rosrc"
     __rosrc
     echo "🗹 ros workspace activated"
-    
+
   else
     if [ ! "$1" == "--quite" ]; then
       echo "🗷 no ros workspace detected, please run 'rosinit' to initialize a new workspace"
@@ -367,4 +366,3 @@ rosuninstall() {
 
 rosactivate --quite
 # <<< ros initialize <<<
-
