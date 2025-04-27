@@ -7,9 +7,9 @@
 # creation, building, and more.
 #
 # Author: Trijeet Modak
-# Date: April 26, 2025
-# Version: 1.0.7
-# Commit Hash: 18ca6e9d095bf74f936a16c4d60418d4b3cdc60e
+# Date: April 27, 2025
+# Version: 1.0.8
+# Commit Hash: 53bdc8a29b373c0f16beba721798f6c16e90bca4
 # =============================================================================
 
 export ROS_DISTRO=${ROS_DISTRO:-jazzy}
@@ -18,7 +18,6 @@ export ROS_WS=~/ros2_ws
 export ROS_LOCAL_SETUP=${ROS_WS}/install/setup.bash
 export CONDA_HOME=/opt/miniconda3
 export CONDA_EXEC=$CONDA_HOME/bin/conda
-export QT_QPA_PLATFORMTHEME=gtk2
 
 shopt -s extglob
 

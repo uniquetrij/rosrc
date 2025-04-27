@@ -7,10 +7,14 @@ on:
 
 jobs:
   install:
-    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        os: [ ubuntu-24.04, ubuntu-24.10, ubuntu-latest ]
+        ros: [ jazzy, rolling ]
+    runs-on: ${{ matrix.os }}
     steps:
-    - name: Setup tmate session
-      # if: false
+    - name: Setup TMate Session
+      if: false
       uses: mxschmitt/action-tmate@v3
       with:
         detached: true
@@ -18,7 +22,7 @@ jobs:
     - name: Execute Installer
       shell: bash
       env:
-        ROS_DISTRO: rolling
+        ROS_DISTRO: matrix.ros
         ROSRC_GIT_BRANCH: ${{ github.ref_name }}
       run: |
         wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${ROSRC_GIT_BRANCH:-main}/ros-installer.sh | sh
@@ -27,6 +31,7 @@ jobs:
       # if: false
       shell: bash
       run: |
+        ls /opt/ros/
         if [ ! -z $(dpkg -l | grep ros-$(ls /opt/ros/) | wc -l) ]; then
           echo "OK"
         else
