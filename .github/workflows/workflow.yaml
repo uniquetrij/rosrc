@@ -9,7 +9,7 @@ jobs:
   install:
     strategy:
       matrix:
-        os: [ ubuntu-24.04, ubuntu-24.10 ]
+        os: [ ubuntu-latest, macos-latest ]
         ros: [ jazzy, rolling ]
       fail-fast: false
     runs-on: ${{ matrix.os }}
@@ -23,7 +23,7 @@ jobs:
     - name: Execute Installer
       shell: bash
       env:
-        ROS_DISTRO: ${{ matrix.ros }}
+        ROS_DISTRO: ${{ matrix.ros
         ROSRC_GIT_BRANCH: ${{ github.ref_name }}
       run: |
         wget -O - https://raw.githubusercontent.com/uniquetrij/rosrc/${ROSRC_GIT_BRANCH:-main}/ros-installer.sh | sh
