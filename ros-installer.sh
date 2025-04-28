@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Check if running Ubuntu 24.04 or later
-if [ "$(lsb_release -si)" != "Ubuntu" ] || [ "$(lsb_release -rs | cut -d. -f1)" -lt 24 ] || { [ "$(lsb_release -rs | cut -d. -f1)" -eq 24 ] && [ "$(lsb_release -rs | cut -d. -f2)" -lt 4 ]; }; then
-  echo "This script is intended for Ubuntu 24.04 LTS or later only."
-  exit 1
-fi
+# if [ "$(lsb_release -si)" != "Ubuntu" ] || [ "$(lsb_release -rs | cut -d. -f1)" -lt 24 ] || { [ "$(lsb_release -rs | cut -d. -f1)" -eq 24 ] && [ "$(lsb_release -rs | cut -d. -f2)" -lt 4 ]; }; then
+#   echo "This script is intended for Ubuntu 24.04 LTS or later only."
+#   exit 1
+# fi
 
 # Ensure curl is installed
 sudo apt update && sudo apt install --reinstall -y curl
